@@ -8,14 +8,22 @@ pipeline {
         stage('Checkout') {
             steps { git branch: 'main', url: 'https://github.com/Ankurbhardwaj25/loggingdemo.git' }
         }
-        stage('Build JAR') {
-            steps {
-                sh 'apt update && apt install -y maven openjdk-17-jdk && mvn clean package -DskipTests'
-            }
-        }
-        stage('Build Docker Image') {
-            steps { sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ." }
-        }
+       stage('Build JAR') {
+           steps {
+               dir("${env.WORKSPACE}") {
+                   sh 'mvn clean package -DskipTests'
+               }
+           }
+       }
+
+      stage('Build Docker Image') {
+          steps {
+              dir("${env.WORKSPACE}") {
+                  sh "docker build -t loggingdemo-springboot:1.0 ."
+              }
+          }
+      }
+
         stage('Run Container') {
             steps {
                 sh "docker rm -f ${IMAGE_NAME} || true"
