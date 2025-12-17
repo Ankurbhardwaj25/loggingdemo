@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.3-eclipse-temurin-17'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v /root/.m2:/root/.m2'
+        }
+    }
 
     environment {
         IMAGE_NAME = "loggingdemo-springboot"
@@ -28,10 +33,8 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                script {
-                    sh "docker rm -f ${IMAGE_NAME} || true"
-                    sh "docker run -d -p 8081:8081 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
-                }
+                sh "docker rm -f ${IMAGE_NAME} || true"
+                sh "docker run -d -p 8081:8081 --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
