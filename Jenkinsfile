@@ -13,9 +13,16 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                // Explicit Git checkout instead of checkout scm
-                git branch: 'main',
-                    url: 'https://github.com/Ankurbhardwaj25/loggingdemo.git'
+                // Correct Git checkout that works in empty workspace
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Ankurbhardwaj25/loggingdemo.git'
+                    ]]
+                ])
             }
         }
         stage('Build JAR') {
