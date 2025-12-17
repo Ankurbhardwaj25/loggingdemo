@@ -6,7 +6,7 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps { git branch: 'main', url: 'https://github.com/<username>/loggingdemo.git' }
+            steps { git branch: 'main', url: 'https://github.com/Ankurbhardwaj25/loggingdemo.git' }
         }
         stage('Build JAR') {
             steps {
