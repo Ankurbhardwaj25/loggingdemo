@@ -13,31 +13,26 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                // Let Jenkins plugin handle Git
-                checkout scm
+                // Explicit Git checkout instead of checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/Ankurbhardwaj25/loggingdemo.git'
             }
         }
         stage('Build JAR') {
             steps {
-                dir("${env.WORKSPACE}") {
-                    sh 'mvn clean package -DskipTests'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
         stage('Build Docker Image') {
             steps {
-                dir("${env.WORKSPACE}") {
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-                }
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
         stage('Run Container') {
             steps {
-                dir("${env.WORKSPACE}") {
-                    sh "docker rm -f ${IMAGE_NAME} || true"
-                    sh "fuser -k ${CONTAINER_PORT}/tcp || true"
-                    sh "docker run -d -p ${CONTAINER_PORT}:${CONTAINER_PORT} --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
-                }
+                sh "docker rm -f ${IMAGE_NAME} || true"
+                sh "fuser -k ${CONTAINER_PORT}/tcp || true"
+                sh "docker run -d -p ${CONTAINER_PORT}:${CONTAINER_PORT} --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
     }
