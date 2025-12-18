@@ -7,7 +7,7 @@
     </appender>
 
     <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
-        <url>https://host.docker.internal:8088/services/collector/event</url>
+        <url>http://host.docker.internal:8088</url>
         <token>8789bd48-c6ef-4c55-96a1-6f699c113732</token>
 
         <channel>11111111-1111-1111-1111-111111111111</channel>
