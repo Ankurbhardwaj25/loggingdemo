@@ -1,12 +1,16 @@
 <configuration>
-    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
-        <url>http://localhost:8088</url>
-        <token>8789bd48-c6ef-4c55-96a1-6f699c113732</token>
-        <index>main</index>
-        <sourcetype>springboot</sourcetype>
+
+    <appender name="SPLUNK_HTTP" class="ch.qos.logback.core.net.SocketAppender">
+        <remoteHost>host.docker.internal</remoteHost>
+        <port>8088</port>
+    </appender>
+
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="SPLUNK"/>
+        <appender-ref ref="JSON_CONSOLE"/>
     </root>
+
 </configuration>
