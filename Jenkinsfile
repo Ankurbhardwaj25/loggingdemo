@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-    // This tells Jenkins to handle the Maven installation for you
     tools {
+        // This name MUST match what you saved in Manage Jenkins > Tools
         maven 'maven3'
     }
 
     options {
-        // Prevents the "not in a git directory" error by avoiding implicit checkout
+        // Helps avoid the initial Git 128 error
         skipDefaultCheckout()
     }
 
@@ -19,38 +19,35 @@ pipeline {
     }
 
     stages {
-        stage('Initialize') {
+        stage('Clean & Initialize') {
             steps {
-                // Ensure workspace is clean but git-ready
-                cleanWs()
+                deleteDir()
+                // Fixes "dubious ownership" errors inside Docker containers
                 sh "git config --global --add safe.directory '*'"
             }
         }
 
         stage('Checkout') {
             steps {
-                // Explicitly pull the code
                 git branch: 'main', url: "${REPO_URL}"
             }
         }
 
         stage('Build JAR') {
             steps {
-                // Because of the 'tools' block, 'mvn' is now in your PATH
+                // Now 'mvn' will be found because of the 'tools' block
                 sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                // This works because you mounted /var/run/docker.sock
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
 
-        stage('Deploy Container') {
+        stage('Deploy') {
             steps {
-                // Stop old container and start new one on the host machine
                 sh "docker rm -f ${IMAGE_NAME} || true"
                 sh "docker run -d -p ${CONTAINER_PORT}:${CONTAINER_PORT} --name ${IMAGE_NAME} ${IMAGE_NAME}:${IMAGE_TAG}"
             }
@@ -59,8 +56,8 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline finished. Cleaning up dangling images...'
             sh 'docker image prune -f'
+            echo 'Build Process Completed'
         }
     }
 }
