@@ -14,7 +14,7 @@ pipeline {
     environment {
         IMAGE_NAME = "loggingdemo-springboot"
         IMAGE_TAG = "1.0"
-        CONTAINER_PORT = "8081"
+        CONTAINER_PORT = "8082"
         REPO_URL = "https://github.com/Ankurbhardwaj25/loggingdemo.git"
     }
 
