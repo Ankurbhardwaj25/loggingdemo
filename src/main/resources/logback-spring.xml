@@ -1,16 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <appender name="SPLUNK_HTTP" class="ch.qos.logback.core.net.SocketAppender">
-        <remoteHost>host.docker.internal</remoteHost>
-        <port>8088</port>
+    <!-- Console logs -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
     </appender>
 
-    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    <!-- Splunk HEC Appender -->
+    <appender name="SPLUNK" class="com.splunk.logging.HttpEventCollectorLogbackAppender">
+        <!-- Splunk HEC URL -->
+        <url>https://localhost:8088</url>
+
+        <!-- Your Splunk HEC Token -->
+        <token>8789bd48-c6ef-4c55-96a1-6f699c113732</token>
+
+        <!-- Optional Channel -->
+        <channel>11111111-1111-1111-1111-111111111111</channel>
+
+        <!-- Sourcetype for logs -->
+        <sourcetype>_json</sourcetype>
+
+        <!-- Enable SSL for Docker Splunk -->
+        <disableCertificateValidation>true</disableCertificateValidation>
+
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>{"message":"%msg","logger":"%logger","level":"%level"}</pattern>
+        </layout>
     </appender>
 
+    <!-- Root Logger -->
     <root level="INFO">
-        <appender-ref ref="JSON_CONSOLE"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="SPLUNK"/>
     </root>
 
 </configuration>
